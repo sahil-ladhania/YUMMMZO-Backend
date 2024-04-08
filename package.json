@@ -1,0 +1,17 @@
+{
+  "name": "yummmzo-backend",
+  "version": "1.0.0",
+  "description": "Backend of YUMMMZO.",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Sahil Ladhania",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  }
+}
