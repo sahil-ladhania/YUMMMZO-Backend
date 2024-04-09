@@ -12,7 +12,175 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Define all the Schema here for YUMMMZO !!!
+// Define all the Schema below for YUMMMZO !!!
 // Then use this command to generate migrations file - npx prisma migrate dev --name init
 // Whenever you update your Prisma schema, you will have to update your database schema using either prisma migrate dev or prisma db push. This will keep your database schema in sync with your Prisma schema. The commands will also regenerate Prisma Client.
 // For example purpose - https://github.com/prisma/prisma-examples/tree/latest/javascript/rest-express
+
+// Defining USER Model
+model User{
+  user_id Int @id @default(autoincrement())
+  first_name String
+  last_name String
+  email String @unique
+  password String
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  // User-Address(1:M) Relation
+  addresses Address[]
+  // User-Order(1:M) Relation
+  orders Order[]
+  // User-Reviews(1:M) Relation
+  reviews Review[]
+}
+
+// Defining RESTAURANT OWNER Model
+model Owner{
+  owner_id Int @id @default(autoincrement())
+  first_name String
+  last_name String
+  email String @unique
+  password String
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  // Owner-Restaurant(1:M) Relation
+  restaurants Restaurant[]
+}
+
+// Defining RESTAURANT Model
+model Restaurant{
+  restaurant_id Int @id @default(autoincrement())
+  restaurant_name String @unique
+  cuisine String
+  deliveryTime Int
+  priceForTwo Int
+  imageURL String
+  state String
+  city String
+  address String
+  streeNumber Int
+  pincode Int
+  mobileNumberAtRestaurant Int
+  mobileNumberOfOwner Int
+  ownerName String
+  ownerEmailAddress String
+  rating Int
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  // Restaurant-Reviews(1:M) Relation
+  reviews Review[]
+  // Back Referencing to Owner
+  owner Owner @relation(fields: [owner_id], references: [owner_id])
+  owner_id Int
+}
+
+// Defining MENU Model
+model Menu{
+  menu_id Int @id @default(autoincrement())
+  restaurant_id Int
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  // Menu-MenuItems(1:M) Relation
+  menuItems MenuItems[]
+}
+
+// Defining MENUITEMS Model
+model MenuItems{
+  menuItem_id Int @id @default(autoincrement())
+  imageURL String
+  vegOrNonveg Boolean
+  itemName String
+  itemPrice Int
+  itemDescription String
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  // Back Referencing to Menu
+  belongsToMenu Menu @relation(fields: [menu_id], references: [menu_id])
+  menu_id Int
+}
+
+// Defining USER ADDRESS Model
+model Address{
+  address_id Int @id @default(autoincrement())
+  state String
+  city String
+  street String
+  houseNo Int
+  addressName String
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  // Back Referencing to User
+  user        User     @relation(fields: [user_id], references: [user_id])
+  user_id     Int
+}
+
+// Defining ORDER Model
+model Order{
+  order_id Int @id @default(autoincrement())
+  restaurant_id Int
+  menu_id Int
+  menuItem_id Int 
+  address_id Int
+  totalAmount Int
+  orderDate DateTime @updatedAt
+  orderTime DateTime @updatedAt
+  // Back Referencing to User
+  user User @relation(fields: [user_id], references: [user_id])
+  user_id Int
+}
+
+// Defining PAYMENT Model
+model Payment{
+  payment_id Int @id @default(autoincrement())
+  user_id Int
+  restaurant_id Int
+  paymentDate DateTime @updatedAt
+  paymentTime DateTime @updatedAt
+}
+
+// Defining REVIEWS Model
+model Review{
+  review_id Int @id @default(autoincrement())
+  rating Int
+  review String
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  // Review-Comments(1:M) Relation
+  comments Comment[]
+  // Back Referencing to User
+  user User @relation(fields: [user_id], references: [user_id])
+  user_id Int
+  // Back Referencing to Restaurant
+  restaurant Restaurant @relation(fields: [restaurant_id] , references: [restaurant_id])
+  restaurant_id Int
+}
+
+// Defining COMMENT Model
+model Comment{
+  comment_id Int @id @default(autoincrement())
+  comment String
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  // Back Referencing to Review
+  review Review @relation(fields: [review_id], references: [review_id])
+  review_id Int
+}
+
+// Defining COMMENT REPLIES Model
+model Reply{
+  reply_id Int @id @default(autoincrement())
+  reply String
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+}
+
+// -----Left Relations-----
+// 1. Restaurant-Menu -----> 1:1
+//     * One Restaurant can have only One Menu.
+//     * One Menu will only point to One Restaurant.
+// 2. Order-Payment ----> 1:1  
+//     * One Order can only point to One Payment at a time.
+//     * One Payment will also point to One Order at a time.
+// 3. Comment-Reply -----> M:M
+//     * Many Comments can have Many Replies.
+//     * Many Replies can point to Many Comments.
