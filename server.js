@@ -1,10 +1,13 @@
 import express from 'express';
-const app = express()
-const port = 3000
+import { handleErrorGlobally } from './Middlewares/Error-Middleware/errorMiddleware.js';
+import userAuthRoutes from '../YUMMMZO-BACKEND/Routes/user-auth/userAuthRoutes.js';
+const app = express();
+const port = 81;
 
-app.get('/', (req, res) => {
-    res.send('Hello World!')
-})
+app.use(express.json());
+
+app.use(userAuthRoutes);
+app.use(handleErrorGlobally);
 
 app.listen(port, () => {
     console.log(`YUMMMZO Listening on port ${port}`)
