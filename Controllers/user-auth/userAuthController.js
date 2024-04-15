@@ -91,7 +91,7 @@ export const userLogin = async(req , res , next) => {
                 }
             })
             console.log(existingUser);
-            if(existingUser == null){
+            if(existingUser === null){
                 console.log("User Not Found !!!");
             }
             else{
