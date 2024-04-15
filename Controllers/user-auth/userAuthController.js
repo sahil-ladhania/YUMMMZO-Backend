@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { hashingPassword } from "../../Helpers/user-auth/hashingPassword.js";
 import { comparingPassword } from "../../Helpers/user-auth/comparingPassword.js";
 import { generatingJWT } from "../../Helpers/user-auth/generatingToken.js";
+import { comparingOldPassword } from "../../Helpers/user-auth/comparingOldPassword.js";
 const prisma = new PrismaClient();
 config();
 
@@ -137,11 +138,114 @@ export const userLogin = async(req , res , next) => {
 }
 
 // For Getting All Users
-export const getAllUsers = (req , res) => {
-
+export const getAllUsers = async(req , res , next) => {
+    try{
+        // Getting All Users In DB -----> DB Call
+        const allUsers = await prisma.user.findMany();
+        console.log(allUsers);
+        if(!allUsers){
+            console.log("No User Found !!!");
+        }
+        else{
+            res.status(200).send({
+                Message : "Successfully Got The Users From DB ...",
+                Users : allUsers
+            })
+        }
+    }
+    catch(error){
+        next(error);
+    }
 }
 
 // For Getting a Specific User
-export const getSpecificUser = (req , res) => {
+export const getSpecificUser = async(req , res , next) => {
+    try{
+        // Getting The user_id From Params
+        const {user_id} = req.params;
+        console.log(user_id);
+        const user_id_Int = parseInt(user_id , 10);
+        console.log(user_id_Int);
+        // Getting User Based On user_id -----> DB Call
+        const user = await prisma.user.findUnique({
+            where : {
+                user_id : user_id_Int
+            }
+        })
+        console.log(user);
+        res.status(200).send({
+            Message : "Successfully Got The User ...",
+            User : user
+        })
+    }
+    catch(error){
+        next(error);
+    }
+}
 
+// For Updating The Password
+export const changePassword = async(req , res , next) => {
+    try{
+        // Get The user_id From Params
+        const {user_id} = req.params;
+        console.log(user_id);
+        const user_id_Int = parseInt(user_id , 10);
+        console.log(user_id_Int);
+        // Getting The Old Password and New Password From Body
+        const {old_password} = req.body;
+        console.log(old_password);
+        const {new_password} = req.body;
+        console.log(new_password);
+        // Checking If User Exist -----> DB Call
+        const existingUser = await prisma.user.findUnique({
+            where : {
+                user_id : user_id_Int
+            }
+        })
+        console.log(existingUser);
+        if(existingUser === null){
+            console.log("No User Found !!!");
+        }
+        else{
+            // Comparing The Old Password With Hashed Password In DB
+            comparingOldPassword(old_password , existingUser.password)
+                .then((isMatch) => {
+                    console.log(isMatch);
+                    // Hashing The New Password
+                    hashingPassword(new_password)
+                        .then((newHashedPassword) => {
+                            console.log(newHashedPassword);
+                            // Update The Old Password With New Password ----> DB Hit
+                            const updatePassword =  prisma.user.update({
+                                where : {
+                                    user_id : user_id_Int
+                                },
+                                data : {
+                                    password : newHashedPassword
+                                }
+                            })
+                            updatePassword
+                                .then((updatedUser) => {
+                                    console.log(updatedUser);
+                                    res.status(201).send({
+                                        Message : "Password Changed Successfully ...",
+                                        UpdatedUser : updatedUser
+                                    })
+                                })
+                                .catch((error) => {
+                                    next(error);
+                                })
+                        })
+                        .catch((error) => {
+                            next(error);
+                        })
+                })
+                .catch((error) => {
+                    next(error);
+                })
+        }
+    }
+    catch(error){
+        next(error);
+    }
 }
