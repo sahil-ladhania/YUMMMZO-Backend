@@ -106,7 +106,8 @@ export const userLogin = async(req , res , next) => {
                             const payload = {
                                 first_name : existingUser.first_name,
                                 last_name : existingUser.last_name,
-                                email : email
+                                email : email,
+                                role : "USER"
                             }
                             console.log(typeof(payload));
                             console.log(payload);

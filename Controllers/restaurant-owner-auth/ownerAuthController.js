@@ -106,7 +106,8 @@ export const ownerLogin = async(req , res , next) => {
                             const payload = {
                                 first_name : existingOwner.first_name,
                                 last_name : existingOwner.last_name,
-                                email : email
+                                email : email,
+                                role : "OWNER"
                             }
                             console.log(typeof(payload));
                             console.log(payload);
@@ -148,7 +149,7 @@ export const getAllOwners = async(req , res , next) => {
         }
         else{
             res.status(200).send({
-                Message : "Successfully Got The Users From DB ...",
+                Message : "Successfully Got The Owners From DB ...",
                 Users : allOwners
             })
         }
