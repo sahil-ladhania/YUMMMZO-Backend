@@ -1,20 +1,52 @@
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 
-export const createRestaurant = (req , res) = {
+// For Creating Restaurant
+export const createRestaurant = async(req , res , next) => {
+    try{
 
+    }
+    catch(error){
+        next(error);
+    }
 }
 
-export const updateRestaurant = (req , res) = {
+// For Updating Restaurant
+export const updateRestaurant = async(req , res , next) => {
+    try{
 
+    }
+    catch(error){
+        next(error);
+    }
 }
 
-export const deleteRestaurant = (req , res) = {
+// For Deleting Restaurant
+export const deleteRestaurant = async(req , res , next) => {
+    try{
 
+    }
+    catch(error){
+        next(error);
+    }
 }
 
-export const getAllRestaurants = (req , res) = {
+// For Getting All Restaurants
+export const getAllRestaurants = async(req , res , next) => {
+    try{
 
+    }
+    catch(error){
+        next(error);
+    }
 }
 
-export const getSpecificRestaurant = (req , res) = {
+// For Getting A Specific Restaurant
+export const getSpecificRestaurant = async(req , res , next) => {
+    try{
 
+    }
+    catch(error){
+        next(error);
+    }
 }
