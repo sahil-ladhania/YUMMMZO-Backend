@@ -11,8 +11,8 @@ router.post('/api/v1/user/login' , userLogin);
 // For Getting all Users
 router.get('/api/v1/users' , isAuthorized ,  getAllUsers);
 // For Getting a specific User
-router.get('/api/v1/users/:user_id' , getSpecificUser);
+router.get('/api/v1/users/:user_id' , isAuthorized , getSpecificUser);
 // For Updating Password
-router.put('/api/v1/user/change-password/:user_id' , changePassword);
+router.put('/api/v1/user/change-password/:user_id' , isAuthorized , changePassword);
 
 export default router;
